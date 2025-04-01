@@ -115,6 +115,10 @@ Enter the path to the APK file or folder containing APKs: /path/to/apk/file.apk
 
 ![Apikey](img/apikey.png)
 
+## Added new email verification features
+![Email-sent](img/email_sent.png)
+
+![Email-received](img/email_received.png)
 
 ## License
 This project is licensed under the MIT License. See the [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) file for details.
