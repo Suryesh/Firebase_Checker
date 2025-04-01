@@ -9,58 +9,35 @@ import uuid
 from termcolor import colored
 import readline
 
+SCRIPT_VERSION = "1.2.0"
+REMOTE_SCRIPT_URL = "https://raw.githubusercontent.com/Suryesh/Firebase_Checker/main/firebase-checker.py"
+
 BANNER = r"""
    _____         __                  _______           __          
   / __(_)______ / /  ___ ____ ___   / ___/ /  ___ ____/ /_____ ____
  / _// / __/ -_) _ \/ _ `(_-</ -_) / /__/ _ \/ -_) __/  '_/ -_) __/
 /_/ /_/_/  \__/_.__/\_,_/___/\__/  \___/_//_/\__/\__/_/\_\\__/_/   
                                                                     
-                           This tool is built by Suryesh  V: 1.0.0                                 
-               Check my Youtube Channel: https://www.youtube.com/@suryesh_92
-"""
+                  This tool is built by Suryesh v: {}""".format(SCRIPT_VERSION)
 
-# Constants for auto-update
-SCRIPT_VERSION = "1.0.0"
-REMOTE_SCRIPT_URL = "https://raw.githubusercontent.com/Suryesh/Firebase_Checker/main/firebase-checker.py"
-  
-#check for update  
+def print_banner():
+    print(colored(BANNER, 'cyan'))
+    print(colored("               	YouTube: https://www.youtube.com/@suryesh_92\n", 'yellow'))
+
 def check_for_updates():
-    """Checks for updates and updates the script if a new version is available."""
-    print(colored("\nChecking for updates...", "blue"))
-    
     try:
         response = requests.get(REMOTE_SCRIPT_URL)
         if response.status_code == 200:
-            remote_script = response.text
-
-            remote_version = None
-            for line in remote_script.splitlines():
-                if line.startswith("SCRIPT_VERSION"):
-                    remote_version = line.split('"')[1]
-                    break
-
-            if remote_version and remote_version != SCRIPT_VERSION:
-                print(colored(f"Update available: {remote_version}", "green"))
-                print(colored(f"Current version: {SCRIPT_VERSION}", "yellow"))
-                choice = input(colored("Do you want to update? (y/n): ", "yellow")).strip().lower()
-                
-                if choice == "y":
-                    with open(__file__, "w", encoding="utf-8") as f:
-                        f.write(remote_script)
-                    print(colored("Update successful! Please restart the script.", "green"))
+            remote_version = re.search(r'SCRIPT_VERSION = "(\d+\.\d+\.\d+)"', response.text)
+            if remote_version and remote_version.group(1) != SCRIPT_VERSION:
+                print(colored(f"\nUpdate available: v{remote_version.group(1)}", 'green'))
+                if input(colored("Update now? (y/n): ", 'yellow')).lower() == 'y':
+                    with open(__file__, 'w') as f:
+                        f.write(response.text)
+                    print(colored("Update successful! Please restart.", 'green'))
                     sys.exit(0)
-                else:
-                    print(colored("Update skipped.", "yellow"))
-            else:
-                print(colored("You are using the latest version.", "green"))
-        else:
-            print(colored("Failed to check for updates. Please try again later.", "red"))
-    except Exception as e:
-        print(colored(f"Error checking for updates: {e}", "red"))
-
-def print_banner():
-    """Prints the banner."""
-    print(colored(BANNER, 'cyan'))
+    except Exception:
+        pass
 
 def help():
     """Displays help information about the script."""
@@ -152,6 +129,27 @@ def check_firebase_vulnerability(firebase_url, google_api_key, app_id, apk_name)
     
     return vulnerabilities
 
+def send_verification_email(api_key, id_token):
+    """Send email verification link using idToken"""
+    url = f"https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key={api_key}"
+    payload = {
+        "requestType": "VERIFY_EMAIL",
+        "idToken": id_token
+    }
+    
+    try:
+        response = requests.post(url, json=payload)
+        if response.status_code == 200:
+            print(colored("\n[+] Verification email sent successfully!", 'green'))
+            print("Check the inbox of the registered email")
+            return True
+        else:
+            print(colored(f"\n[!] Failed to send verification (HTTP {response.status_code})", 'red'))
+            return False
+    except Exception as e:
+        print(colored(f"\n[!] Error: {str(e)}", 'red'))
+        return False
+       
 # Unauthorizd signup checker
 def check_unauthorized_signup(google_api_key, apk_name):
     """Checks if unauthorized Firebase signup is possible."""
@@ -168,11 +166,17 @@ def check_unauthorized_signup(google_api_key, apk_name):
         
         if 'idToken' in response:
             vulnerabilities.append("Unauthorized Firebase signup is enabled")
-            send_alert("Unauthorized signup is enabled! This is a critical vulnerability.")
+            send_alert("Unauthorized signup is enabled!...")
             
             response_json = json.loads(response)
             id_token = response_json.get("idToken")
             refresh_token = response_json.get("refreshToken")
+
+           # Send verification email if signup was successful
+            if id_token:
+                print(colored("\nAttempting to send verification email...", "blue"))
+                send_verification_email(google_api_key, id_token)
+               
             if refresh_token:
                 token_url = f"https://securetoken.googleapis.com/v1/token?key={google_api_key}"
                 token_payload = json.dumps({"grant_type": "refresh_token", "refresh_token": refresh_token})
@@ -231,7 +235,7 @@ def get_apk_path():
     """Prompts the user to enter the path to an APK file or folder with tab completion."""
     readline.set_completer(tab_complete_path)
     readline.parse_and_bind("tab: complete")
-    return input(colored("Enter the path to the APK file or folder containing APKs: ", "yellow"))
+    return input(colored("Enter the path to the APK file: ", "yellow"))
 
 if __name__ == "__main__":
     check_for_updates()
