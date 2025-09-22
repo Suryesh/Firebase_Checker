@@ -9,7 +9,7 @@ import uuid
 from termcolor import colored
 import readline
 
-SCRIPT_VERSION = "1.2.1"
+SCRIPT_VERSION = "1.2.2"
 REMOTE_SCRIPT_URL = "https://raw.githubusercontent.com/Suryesh/Firebase_Checker/main/firebase-checker.py"
 
 BANNER = r"""
