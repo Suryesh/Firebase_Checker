@@ -9,7 +9,7 @@ import uuid
 from termcolor import colored
 import readline
 
-SCRIPT_VERSION = "1.2.0"
+SCRIPT_VERSION = "1.2.1"
 REMOTE_SCRIPT_URL = "https://raw.githubusercontent.com/Suryesh/Firebase_Checker/main/firebase-checker.py"
 
 BANNER = r"""
@@ -76,12 +76,14 @@ def extract_info_from_apk(apk_path):
     app_id_match = re.search(r'1:(\d+):android:([a-f0-9]+)', strings_output)
     firebase_url_match = re.search(r'https://[a-zA-Z0-9-]+\.firebaseio\.com', strings_output)
     google_api_key_match = re.search(r'AIza[0-9A-Za-z-_]{35}', strings_output)
+    storage_bucket_match = re.search(r'([a-zA-Z0-9-]+)\.appspot\.com', strings_output)
 
     app_id = app_id_match.group(0) if app_id_match else None
     firebase_url = firebase_url_match.group(0) if firebase_url_match else None
     google_api_key = google_api_key_match.group(0) if google_api_key_match else None
+    storage_bucket = storage_bucket_match.group(0) if storage_bucket_match else None
 
-    return app_id, firebase_url, google_api_key
+    return app_id, firebase_url, google_api_key, storage_bucket
 
 def send_alert(message):
     """Prints alert messages in red."""
@@ -208,11 +210,12 @@ def process_apks(input_path):
     for apk_path in apk_files:
         file_name = os.path.basename(apk_path)
         print(colored(f"\nProcessing APK: {file_name}", 'cyan'))
-        app_id, firebase_url, google_api_key = extract_info_from_apk(apk_path)
+        app_id, firebase_url, google_api_key, storage_bucket = extract_info_from_apk(apk_path)
 
         print(f"App ID: {colored(app_id, 'green')}")
         print(f"Firebase URL: {colored(firebase_url, 'green')}")
         print(f"Google API Key: {colored(google_api_key, 'green')}")
+        print(f"Firebase Storage Bucket URL: {colored(storage_bucket, 'green')}")
 
         vulnerabilities = check_firebase_vulnerability(firebase_url, google_api_key, app_id, file_name)
         vulnerabilities.extend(check_unauthorized_signup(google_api_key, file_name))
