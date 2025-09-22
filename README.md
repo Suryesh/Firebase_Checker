@@ -1,6 +1,19 @@
 # Firebase_Checker
 
-A Firebase Checker is powerful Python tool to analyze APK files for Firebase-related vulnerabilities, such as open Firebase databases, unauthorized Firebase signup, and Firebase Remote Config misconfigurations. This tool is designed for security researchers, developers, and penetration testers to identify potential security risks in Android applications that use Firebase.
+A Firebase Checker is powerful Python tool to analyze APK files and web applications for Firebase-related vulnerabilities. This tool identifies security misconfigurations in Firebase implementations for both Android and web applications. Designed for security researchers, developers, and penetration testers to identify potential security risks in applications that use Firebase.
+
+![Version](https://img.shields.io/badge/version-1.2.0-blue)
+![Python](https://img.shields.io/badge/python-3.6+-green)
+![License](https://img.shields.io/badge/license-MIT-yellow)
+
+
+## 🚀 New Features in v1.2.1
+
+- **🔍 Dual Testing Mode**: Test both APK files AND web applications manually
+- **📱 Firebase Storage Analysis**: Comprehensive storage bucket security testing
+- **🎯 Smart File Type Detection**: Automatically handles media files, JSON configs, and data files
+- **🔒 Enhanced Security Checks**: Improved vulnerability categorization
+- **📊 Better Reporting**: Color-coded results with clear risk levels
 
 # Features
 
@@ -8,8 +21,45 @@ A Firebase Checker is powerful Python tool to analyze APK files for Firebase-rel
 - **Check for Open Firebase Databases:** Detects if the Firebase database is publicly accessible.
 - **Unauthorized Signup Check:** Tests if unauthorized Firebase signup is possible using the extracted Google API Key.
 - **Firebase Remote Config Check:** Identifies if Firebase Remote Config is enabled and accessible.
+- **Manual Input Mode**: Test web applications by manually entering Firebase configuration
+- **Smart Pattern Recognition**: Identifies Firebase configurations using multiple detection methods
 - **Detailed Reporting:** Provides clear and colored output for vulnerability results.
 - **Email Verification:** Sending email verification link to registered email.
+
+
+### 🔒 Security Testing
+- **Open Database Detection**: Checks if Firebase Realtime Database is publicly accessible
+- **Unauthorized Signup Testing**: Tests if anonymous/user registration is enabled without authentication
+- **Remote Config Analysis**: Identifies Firebase Remote Config misconfigurations
+- **Storage Bucket Security**: Comprehensive Firebase Storage testing with file enumeration
+- **File Access Testing**: Smart detection and testing of media files, config files, and data files
+
+### Storage Bucket Intelligence
+
+- Automatic File Type Detection: Recognizes images, documents, config files
+- Smart Download Testing: Different testing methods for media vs data files
+- Content Preview: Shows preview of config files without full download
+
+
+### Choose testing method:
+```1. Test APK file
+2. Enter Firebase details manually
+
+Enter your choice (1 or 2): 1
+Enter the path to the APK file: /path/to/app.apk
+
+Choice 2: Manually
+
+Enter your choice (1 or 2): 2
+
+Enter Firebase details (press Enter to skip if not available):
+App ID (format: 1:123456789:android:abcdef123456): 
+Firebase URL (format: https://project-id.firebaseio.com): https://mywebapp.firebaseio.com
+Google API Key (format: AIzaSyD...): AIzaSyDexamplekey123
+Storage Bucket (format: project-id.appspot.com): mywebapp.appspot.com
+
+```
+
 
 # Installation
 
