@@ -2,7 +2,7 @@
 
 A Firebase Checker is powerful Python tool to analyze APK files and web applications for Firebase-related vulnerabilities. This tool identifies security misconfigurations in Firebase implementations for both Android and web applications. Designed for security researchers, developers, and penetration testers to identify potential security risks in applications that use Firebase.
 
-![Version](https://img.shields.io/badge/version-1.2.0-blue)
+![Version](https://img.shields.io/badge/version-1.2.1-blue)
 ![Python](https://img.shields.io/badge/python-3.6+-green)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 
