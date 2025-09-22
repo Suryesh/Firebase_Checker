@@ -105,13 +105,9 @@ python3  firebase-checker.py -h
 python3 firebase-checker.py
 ```
 
-3. Enter the path to the APK file or folder containing APKs when prompted:
+3. Enter your choice 1 or 2 when it prompted:
 
-```
-Enter the path to the APK file or folder containing APKs: /path/to/apk/file.apk
-```
-
-4. Now the tool will analyze the APK and display the results.
+4. Now the tool will analyze the APK file or the details you provided.
 
 # PoC - 1
 
