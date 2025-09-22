@@ -28,21 +28,21 @@ A Firebase Checker is powerful Python tool to analyze APK files and web applicat
 
 
 ### 🔒 Security Testing
-✅ Database Security
+      ✅ Database Security
       - Open Firebase Realtime Database detection
       - Public read/write access testing
     
-    ✅ Authentication Security  
+      ✅ Authentication Security  
       - Unauthorized user registration testing
       - Email verification functionality
       - Token generation and validation
       - Account information access
     
-    ✅ Remote Config Security
+      ✅ Remote Config Security
       - Firebase Remote Config accessibility
       - Configuration data exposure
     
-    ✅ Storage Security
+      ✅ Storage Security
       - Firebase Storage bucket access control
       - File enumeration and listing
       - Smart file type detection (images, PDFs, config files)
@@ -130,11 +130,11 @@ python3 firebase-checker.py
     ⚠️  ERRORS (Yellow) - Testing errors or issues
 
 ### 📁 DOWNLOAD OPTIONS:
-      When accessible files are found in storage:
-    - Download individual files by number
-    - Download ALL files in one operation  
-    - View complete file list before downloading
-    - Skip downloading if not needed
+      - When accessible files are found in storage:
+      - Download individual files by number
+      - Download ALL files in one operation  
+      - View complete file list before downloading
+      - Skip downloading if not needed
 
 
     
