@@ -42,7 +42,8 @@ A Firebase Checker is powerful Python tool to analyze APK files and web applicat
 
 
 ### Choose testing method:
-```1. Test APK file
+```
+1. Test APK file
 2. Enter Firebase details manually
 
 Enter your choice (1 or 2): 1
