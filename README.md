@@ -28,11 +28,25 @@ A Firebase Checker is powerful Python tool to analyze APK files and web applicat
 
 
 ### 🔒 Security Testing
-- **Open Database Detection**: Checks if Firebase Realtime Database is publicly accessible
-- **Unauthorized Signup Testing**: Tests if anonymous/user registration is enabled without authentication
-- **Remote Config Analysis**: Identifies Firebase Remote Config misconfigurations
-- **Storage Bucket Security**: Comprehensive Firebase Storage testing with file enumeration
-- **File Access Testing**: Smart detection and testing of media files, config files, and data files
+✅ Database Security
+      - Open Firebase Realtime Database detection
+      - Public read/write access testing
+    
+    ✅ Authentication Security  
+      - Unauthorized user registration testing
+      - Email verification functionality
+      - Token generation and validation
+      - Account information access
+    
+    ✅ Remote Config Security
+      - Firebase Remote Config accessibility
+      - Configuration data exposure
+    
+    ✅ Storage Security
+      - Firebase Storage bucket access control
+      - File enumeration and listing
+      - Smart file type detection (images, PDFs, config files)
+      - Bulk file downloading capability
 
 ### Storage Bucket Intelligence
 
@@ -41,7 +55,7 @@ A Firebase Checker is powerful Python tool to analyze APK files and web applicat
 - Content Preview: Shows preview of config files without full download
 
 
-### Choose testing method:
+### 📱 Choose testing method:
 ```
 1. Test APK file
 2. Enter Firebase details manually
@@ -109,6 +123,21 @@ python3 firebase-checker.py
 
 4. Now the tool will analyze the APK file or the details you provided.
 
+### 🎯 OUTPUT CATEGORIES:
+    ❌ VULNERABILITIES DETECTED (Red) - Immediate security risks
+    ✅ SECURE CONFIGURATIONS (Green) - Properly secured settings  
+    ℹ️  INFORMATION (Blue) - Informational messages
+    ⚠️  ERRORS (Yellow) - Testing errors or issues
+
+### 📁 DOWNLOAD OPTIONS:
+      When accessible files are found in storage:
+    - Download individual files by number
+    - Download ALL files in one operation  
+    - View complete file list before downloading
+    - Skip downloading if not needed
+
+
+    
 # PoC - 1
 
 ### Help
