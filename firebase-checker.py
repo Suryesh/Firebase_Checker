@@ -9,7 +9,7 @@ import uuid
 from termcolor import colored
 import readline
 
-SCRIPT_VERSION = "1.0.2"
+SCRIPT_VERSION = "1.0.3"
 REMOTE_SCRIPT_URL = "https://raw.githubusercontent.com/Suryesh/Firebase_Checker/main/firebase-checker.py"
 
 BANNER = r"""
@@ -398,7 +398,7 @@ def check_firebase_vulnerability(firebase_url, google_api_key, app_id, source_na
         try:
             response = requests.get(f"{firebase_url}/.json", timeout=5)
             if response.status_code == 200:
-                vulnerabilities.append(("Firebase database publicly readable - data exposure detected", "vulnerable"))
+                vulnerabilities.append(("Firebase database (.json) publicly readable - data exposure detected", "vulnerable"))
                 send_alert(f"Open Firebase database detected. URL: {firebase_url}")
                 execute_curl_command(f"curl {firebase_url}/.json")
             elif response.status_code == 401:
@@ -408,7 +408,7 @@ def check_firebase_vulnerability(firebase_url, google_api_key, app_id, source_na
             elif response.status_code == 404:
                 vulnerabilities.append(("Firebase database not found", "info"))
             else:
-                vulnerabilities.append(("Firebase database is not openly accessible", "secure"))
+                vulnerabilities.append(("Firebase database (.json) is not openly accessible", "secure"))
         except requests.RequestException:
             vulnerabilities.append(("Failed to check Firebase database", "error"))
 
@@ -495,7 +495,8 @@ def check_unauthorized_signup(google_api_key, source_name):
         lookup_payload = json.dumps({"idToken": id_token})
         send_alert("Fetching account information using idToken...")
         execute_curl_command(f"curl -X POST '{lookup_url}' -H 'Content-Type: application/json' -d '{lookup_payload}'")
-    
+    else:
+        vulnerabilities.append(("Unauthorized/anonymous Firebase signup is disabled", "secure"))
     return vulnerabilities
 
 # process firebase testing for web
