@@ -9,7 +9,7 @@ import uuid
 from termcolor import colored
 import readline
 
-SCRIPT_VERSION = "1.0.3"
+SCRIPT_VERSION = "1.0.4"
 REMOTE_SCRIPT_URL = "https://raw.githubusercontent.com/Suryesh/Firebase_Checker/main/firebase-checker.py"
 
 BANNER = r"""
@@ -393,41 +393,100 @@ def offer_file_downloads(storage_bucket, downloadable_files):
 def check_firebase_vulnerability(firebase_url, google_api_key, app_id, source_name):
     """Checks for Firebase vulnerabilities, including open databases and unauthorized signup."""
     vulnerabilities = []
-    
+    print(colored(f"\n🔍 Testing Firebase Database...", 'cyan'))
+    print()
+
     if firebase_url:
         try:
-            response = requests.get(f"{firebase_url}/.json", timeout=5)
+            print(colored(f"Testing database URL: {firebase_url}", 'blue'))
+            response = requests.get(f"{firebase_url}/.json", timeout=10)
+            execute_curl_command(f"curl \"{firebase_url}/.json\"")
+            
             if response.status_code == 200:
                 vulnerabilities.append(("Firebase database (.json) publicly readable - data exposure detected", "vulnerable"))
+                print(colored("✅ Database is publicly accessible!", 'red'))
                 send_alert(f"Open Firebase database detected. URL: {firebase_url}")
-                execute_curl_command(f"curl {firebase_url}/.json")
+
+                try:
+                    data = response.json()
+                    if data:
+                        data_str = str(data)
+                        if len(data_str) > 200:
+                            data_str = data_str[:200] + "..."
+                        print(colored(f"📊 Sample data: {data_str}", 'yellow'))
+                except:
+                    print(colored("📊 Database accessible but data format not readable", 'yellow'))
+                    
             elif response.status_code == 401:
                 vulnerabilities.append(("Firebase database requires authentication - secure", "secure"))
+                print(colored("🔒 Database requires authentication - Secure", 'green'))
             elif response.status_code == 403:
                 vulnerabilities.append(("Firebase database access forbidden - secure", "secure"))
+                print(colored("🔒 Database access forbidden - Secure", 'green'))
             elif response.status_code == 404:
                 vulnerabilities.append(("Firebase database not found", "info"))
+                print(colored("❓ Firebase database not found", 'blue'))
             else:
                 vulnerabilities.append(("Firebase database (.json) is not openly accessible", "secure"))
-        except requests.RequestException:
-            vulnerabilities.append(("Failed to check Firebase database", "error"))
+                print(colored("🔒 Database not publicly accessible - Secure", 'green'))
+                
+        except requests.RequestException as e:
+            vulnerabilities.append((f"Failed to check Firebase database: {str(e)}", "error"))
+            print(colored(f"❌ Database test failed: {str(e)}", 'red'))
+            # ERROR MEIN BHI CURL TRY KARO
+            try:
+                execute_curl_command(f"curl \"{firebase_url}/.json\"")
+            except:
+                pass
+    else:
+        vulnerabilities.append(("Firebase URL not provided - skipping database test", "info"))
+        print(colored("ℹ️  No Firebase URL provided for database test", 'blue'))
 
 # checking for remoteconfig file
+    print(colored(f"\n🔍 Testing Firebase Remote Config...", 'cyan'))
+    print()
+
     if google_api_key and app_id:
         try:
-            project_id = app_id.split(':')[1]
-            url = f"https://firebaseremoteconfig.googleapis.com/v1/projects/{project_id}/namespaces/firebase:fetch?key={google_api_key}"
-            body = {"appId": app_id, "appInstanceId": "required_but_unused_value"}
-
-            response = requests.post(url, json=body, timeout=5)
-            if response.status_code == 200 and response.json().get("state") != "NO_TEMPLATE":
-                vulnerabilities.append(("Firebase Remote Config is enabled", "vulnerable"))
-                send_alert(f"Firebase Remote Config enabled. URL: {url}")
-                execute_curl_command(f"curl -X POST '{url}' -H 'Content-Type: application/json' -d '{json.dumps(body)}'")
+            project_id = None
+            
+            if ':' in app_id and 'android' in app_id:
+                project_id = app_id.split(':')[1]
+            elif ':' in app_id and 'web' in app_id:
+                project_id = app_id.split(':')[1]
+            elif ':' in app_id and 'ios' in app_id:
+                project_id = app_id.split(':')[1]
+            elif app_id.isdigit():
+                project_id = app_id
             else:
-                vulnerabilities.append(("Firebase Remote Config is disabled or inaccessible", "secure"))
+                numbers = re.findall(r'\d+', app_id)
+                if numbers:
+                    project_id = numbers[0]
+            
+            if project_id:
+                url = f"https://firebaseremoteconfig.googleapis.com/v1/projects/{project_id}/namespaces/firebase:fetch?key={google_api_key}"
+                body = {"appId": app_id, "appInstanceId": "required_but_unused_value"}
+
+                response = requests.post(url, json=body, timeout=5)
+                if response.status_code == 200 and response.json().get("state") != "NO_TEMPLATE":
+                    vulnerabilities.append(("Firebase Remote Config is enabled", "vulnerable"))
+                    send_alert(f"Firebase Remote Config enabled. URL: {url}")
+                    print()
+                    print(colored("✅ Remote Config is accessible!", 'red'))
+                    execute_curl_command(f"curl -X POST '{url}' -H 'Content-Type: application/json' -d '{json.dumps(body)}'")
+                else:
+                    vulnerabilities.append(("Firebase Remote Config is disabled or inaccessible", "secure"))
+                    print(colored("🔒 Remote Config not accessible - Secure", 'green'))
+            else:
+                vulnerabilities.append(("Could not extract project ID for Remote Config test", "info"))
+                print(colored("ℹ️  Could not extract project ID", 'blue'))
+                
         except requests.RequestException as e:
             vulnerabilities.append((f"Failed to check Firebase Remote Config: {str(e)}", "error"))
+            print(colored(f"❌ Remote Config test failed: {str(e)}", 'red'))
+    else:
+        vulnerabilities.append(("Google API Key or App ID missing - skipping Remote Config test", "info"))
+        print(colored("ℹ️  Missing API Key or App ID for Remote Config test", 'blue'))
     
     return vulnerabilities
 
@@ -465,13 +524,14 @@ def check_unauthorized_signup(google_api_key, source_name):
     signup_url = f"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={google_api_key}"
     user_email = input(colored("Enter email for signup: ", "yellow"))
     signup_payload = json.dumps({"email": user_email, "password": "Test@Pass123", "returnSecureToken": True})
+    print()
 
-    send_alert(f"Testing unauthorized signup on {signup_url}")
+    send_alert(f"\n🔍 Testing unauthorized signup on {signup_url}")
     response = execute_curl_command(f"curl -X POST '{signup_url}' -H 'Content-Type: application/json' -d '{signup_payload}'")
     
     if 'idToken' in response:
         vulnerabilities.append(("Unauthorized Firebase signup is enabled - security risk", "vulnerable"))
-        send_alert("Unauthorized signup is enabled!...")
+        send_alert("✅ Unauthorized signup is enabled!...")
         
         try:
             response_json = json.loads(response)
