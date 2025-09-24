@@ -78,7 +78,7 @@ def get_testing_method():
     """Ask user if they want to test APK or enter details manually."""
     print(colored("\nChoose testing method:", 'cyan'))
     print(colored("1. Test APK file", 'green'))
-    print(colored("2. Enter Firebase details manually", 'green'))
+    print(colored("2. Enter Firebase details manually for testing Web Apps or APKs", 'green'))
     
     while True:
         choice = input(colored("\nEnter your choice (1 or 2): ", 'yellow')).strip()
