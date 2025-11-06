@@ -9,7 +9,7 @@ import uuid
 from termcolor import colored
 import readline
 
-SCRIPT_VERSION = "1.0.5"
+SCRIPT_VERSION = "1.0.6"
 REMOTE_SCRIPT_URL = "https://raw.githubusercontent.com/Suryesh/Firebase_Checker/main/firebase-checker.py"
 
 BANNER = r"""
@@ -22,7 +22,7 @@ BANNER = r"""
 
 def print_banner():
     print(colored(BANNER, 'cyan'))
-    print(colored("               	YouTube: https://www.youtube.com/@suryesh_92\n", 'yellow'))
+    print(colored("               	YouTube: https://www.youtube.com/@HackWithSuryesh\n", 'yellow'))
 
 def check_for_updates():
     try:
